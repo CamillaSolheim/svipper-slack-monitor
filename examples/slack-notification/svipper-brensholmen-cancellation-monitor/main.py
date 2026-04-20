@@ -465,6 +465,10 @@ def monitor() -> int:
     stop_name, departures = fetch_departures(session)
     alerts = build_alerts(stop_name, departures)
 
+    if not alerts:
+        logging.info("No cancellations detected; exiting without database or Slack activity")
+        return 0
+
     setup_database()
     cleanup_old_alerts()
 
