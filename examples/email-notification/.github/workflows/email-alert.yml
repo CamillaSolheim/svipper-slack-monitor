@@ -1,0 +1,36 @@
+name: Email Alert Monitor
+
+on:
+  schedule:
+    # Kjør hver time (tilpass etter behov)
+    # Format: minute hour day month day-of-week
+    - cron: '0 * * * *'
+
+  # Tillat manuell kjøring
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Run email alert monitor
+      env:
+        GMAIL_USER: ${{ secrets.GMAIL_USER }}
+        GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        EMAIL_RECIPIENTS: ${{ secrets.EMAIL_RECIPIENTS }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      run: |
+        python main.py

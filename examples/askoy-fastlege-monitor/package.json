@@ -1,0 +1,27 @@
+{
+  "name": "askoy-fastlege-monitor",
+  "version": "1.0.0",
+  "description": "Overvåker fastleger i Askøy kommune og sender varsler til Slack ved endringer",
+  "main": "monitor.js",
+  "scripts": {
+    "start": "node monitor.js",
+    "scrape": "node scraper.js",
+    "test": "node scraper.js"
+  },
+  "keywords": [
+    "fastlege",
+    "scraper",
+    "helsenorge",
+    "askøy",
+    "slack",
+    "monitoring"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "playwright": "^1.40.0",
+    "pg": "^8.11.0",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.0"
+  }
+}

@@ -1,0 +1,35 @@
+name: Slack Alert Monitor
+
+on:
+  schedule:
+    # Kjør hver 5. minutt (tilpass etter behov)
+    # Format: minute hour day month day-of-week
+    - cron: '*/5 * * * *'
+
+  # Tillat manuell kjøring
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Run Slack alert monitor
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+      run: |
+        python main.py

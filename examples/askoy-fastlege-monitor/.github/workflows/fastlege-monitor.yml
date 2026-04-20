@@ -1,0 +1,45 @@
+name: Askøy Fastlege Monitor
+
+on:
+  schedule:
+    # Kjør en gang per dag kl. 09:00 UTC (10:00 CET / 11:00 CEST)
+    - cron: '0 9 * * *'
+
+  # Tillat manuell kjøring for testing
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      run: |
+        npm install
+        npx playwright install chromium
+        npx playwright install-deps chromium
+
+    - name: Run fastlege monitor
+      env:
+        DATABASE_URL: ${{ secrets.ASKOY_DATABASE_URL }}
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        SLACK_CHANNEL: ${{ secrets.ASKOY_SLACK_CHANNEL }}
+      run: |
+        node monitor.js
+
+    - name: Upload logs on failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: monitor-logs
+        path: |
+          ./*.log
+        retention-days: 7

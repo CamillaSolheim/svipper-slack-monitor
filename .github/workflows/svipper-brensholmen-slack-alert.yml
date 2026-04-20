@@ -1,0 +1,33 @@
+name: Svipper Brensholmen Slack Alert
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/10 * * * *"
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: examples/slack-notification/svipper-brensholmen-cancellation-monitor
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run monitor
+        env:
+          DATABASE_URL: ${{ secrets.SVIPPER_DATABASE_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SVIPPER_SLACK_WEBHOOK_URL }}
+          SLACK_BOT_TOKEN: ${{ secrets.SVIPPER_SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL: ${{ secrets.SVIPPER_SLACK_CHANNEL }}
+        run: python main.py
